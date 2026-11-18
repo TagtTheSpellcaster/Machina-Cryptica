@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="it">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17211b">
+<title>Il Cryptex — Officina degli Enigmi</title>
+<style>
+:root{
+  --night:#17211b;--wood:#38291c;--wood2:#503821;--brass:#bd914c;
+  --brass-light:#e6c782;--brass-dark:#67451f;--paper:#e1d0a9;
+  --green:#526b55;--red:#a84c32;--ink:#302316;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;display:grid;place-items:center;padding:22px 12px;
+ color:var(--paper);font-family:Georgia,"Times New Roman",serif;
+ background:
+  radial-gradient(ellipse at 50% 12%,#46523c55,transparent 48%),
+  repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 4px),#151c18;
+}
+.machine{
+ width:min(100%,850px);padding:clamp(17px,3vw,30px);position:relative;
+ background:linear-gradient(135deg,#ffffff16,transparent 24%),repeating-linear-gradient(90deg,#0000000a 0 2px,transparent 2px 6px),#3c2b1d;
+ border:8px ridge #9a713d;box-shadow:0 0 0 3px #21170f,0 0 0 7px #bd914c,0 22px 55px #000b;
+}
+.machine:before,.machine:after{content:"";position:absolute;top:10px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f8dda0,#98652a 60%,#2e1d10);box-shadow:0 0 0 2px #69451f}
+.machine:before{left:10px}.machine:after{right:10px}
+header{text-align:center;padding:2px 0 18px;border-bottom:3px double #b28a50}
+.kicker{font:10px "Courier New",monospace;letter-spacing:4px;color:#d0aa68}
+h1{font-size:clamp(30px,6vw,48px);font-variant:small-caps;font-weight:normal;letter-spacing:1px;margin:7px 0 4px;color:#f0d69c;text-shadow:1px 2px #160f09}
+.subtitle{font:10px "Courier New",monospace;letter-spacing:2px;color:#c0a477}
+.intro{max-width:650px;margin:18px auto 10px;text-align:center;color:#e1d0a9;font-size:14px;line-height:1.6}
+.intro strong{color:#f2d38e}
+.cryptex-frame{
+ margin:24px auto 18px;max-width:720px;padding:25px 16px 22px;
+ background:linear-gradient(90deg,#17130f,#40301f 12%,#17130f 50%,#40301f 88%,#17130f);
+ border:4px ridge #a67a3d;box-shadow:inset 0 0 22px #000b,0 7px 12px #0008;
+ position:relative;
+}
+.cryptex-frame:before,.cryptex-frame:after{
+ content:"";position:absolute;left:7px;right:7px;height:9px;
+ background:linear-gradient(#e2c17e,#795022);border:1px solid #382412;
+ box-shadow:0 2px 4px #0008
+}
+.cryptex-frame:before{top:7px}.cryptex-frame:after{bottom:7px}
+.endcap{position:absolute;top:50%;transform:translateY(-50%);height:84px;width:22px;background:linear-gradient(90deg,#4d3219,#e0bb72 45%,#68451f);border:2px ridge #c69a53;z-index:2}
+.endcap.left{left:0}.endcap.right{right:0}
+.rings{display:flex;justify-content:center;gap:5px;position:relative;z-index:1;max-width:100%;overflow:visible}
+.ring{
+ width:100%;max-width:82px;min-width:0;flex:1;height:154px;display:flex;align-items:center;
+ justify-content:center;padding:5px 3px;position:relative;overflow:hidden;
+ touch-action:none;user-select:none;-webkit-user-select:none;cursor:ns-resize;
+ border:3px ridge #b58a4a;border-radius:9px;
+ background:
+  linear-gradient(90deg,#28180e 0%,#68431f 8%,#d0a75f 17%,#f0d38c 48%,#a67535 82%,#382313 100%);
+ box-shadow:inset 0 0 12px #1a1009,2px 3px 5px #0009;
+}
+.ring .drum-window{
+ width:100%;height:132px;position:relative;overflow:hidden;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ perspective:180px;
+ background:linear-gradient(90deg,#17130f 0%,#28231a 13%,#17140f 50%,#28231a 87%,#100d09 100%);
+ border-left:2px solid #d4ad68;border-right:2px solid #d4ad68;
+ box-shadow:inset 0 0 13px #000;
+}
+.ring .digit{
+ position:absolute;left:0;right:0;height:42px;display:grid;place-items:center;
+ color:#d4b66e;font:bold 29px Georgia,serif;line-height:1;
+ background:linear-gradient(90deg,#17130f,#343025 48%,#17130f);
+ text-shadow:0 1px 1px #000,0 0 4px #d6ae5e66;
+ border-top:1px solid #82704a66;border-bottom:1px solid #080705;
+}
+.ring .digit.current{
+ top:50%;height:48px;transform:translateY(-50%);
+ color:#f1d58d;font-size:37px;z-index:3;
+ background:linear-gradient(90deg,#242017,#50452c 48%,#211b13);
+ border-top:1px solid #e3c27b;border-bottom:2px solid #9b753d;
+ box-shadow:inset 0 2px 5px #000,inset 0 -2px 5px #000,0 0 8px #0008;
+}
+.ring .digit.above{
+ top:8px;transform:perspective(120px) rotateX(34deg) scaleX(.88);
+ opacity:.72;filter:brightness(.72);
+}
+.ring .digit.below{
+ bottom:8px;transform:perspective(120px) rotateX(-34deg) scaleX(.88);
+ opacity:.72;filter:brightness(.68);
+}
+.ring .drum-window:before,.ring .drum-window:after{
+ content:"";position:absolute;left:0;right:0;height:25px;z-index:4;pointer-events:none
+}
+.ring .drum-window:before{top:0;background:linear-gradient(#17130f,transparent)}
+.ring .drum-window:after{bottom:0;background:linear-gradient(transparent,#17130f)}
+.ring:focus-visible{outline:2px solid #fff0b8;outline-offset:3px}
+.message{
+ min-height:55px;max-width:650px;margin:15px auto 0;padding:12px 15px;text-align:center;
+ border:1px solid #a7834d;background:#201a13;color:#dfc99d;font-size:13px;line-height:1.5;
+ box-shadow:inset 0 0 12px #0008
+}
+.message.success{border-color:#9ca66e;color:#d9e3b6}
+.message.error{border-color:#b45d45;color:#f0b49d}
+.ring-choice{display:flex;justify-content:center;align-items:center;gap:12px;margin:20px auto -8px;color:#d8bd89}
+.ring-choice label{font:bold 10px "Courier New",monospace;letter-spacing:1px}
+.ring-choice select{
+ font:bold 10px "Courier New",monospace;
+ letter-spacing:1px;
+ padding:8px 10px;
+ color:#fff0c9;
+ background:linear-gradient(#566b53,#293d30);
+ border:2px ridge #bd914c;
+}
+.ring-choice select option{
+ color:#302316;
+ background:#ead7ad;
+ font-weight:bold;
+}
+.ring-choice select option:checked{
+ color:#fff3d5;
+ background:#526b55;
+}
+.hint{margin:12px auto 0;text-align:center;font:10px "Courier New",monospace;color:#bca77f;letter-spacing:.5px}
+.status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:17px auto 0;max-width:650px;font:10px "Courier New",monospace;color:#c5aa79}
+.status strong{color:#f0d69c}
+.instructions{max-width:650px;margin:21px auto 0;padding-top:15px;border-top:1px solid #997445;color:#d2bd92;font-size:12px;line-height:1.65}
+.instructions h2{font-size:15px;font-variant:small-caps;font-weight:normal;letter-spacing:1px;color:#edcf8e;margin:0 0 7px}
+footer{margin-top:18px;padding-top:12px;border-top:3px double #987346;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:9px "Courier New",monospace;color:#a88a5d;letter-spacing:1.5px}
+@media(max-width:520px){
+ body{padding:13px 8px}.machine{padding:16px 10px;border-width:5px}
+ .cryptex-frame{padding:21px 10px;margin:20px auto 15px}
+ .rings{gap:3px}.ring{height:138px;min-width:0;width:auto;flex:1;padding:3px 2px;border-width:2px}
+ .ring .drum-window{height:120px}.ring .digit{height:35px;font-size:24px}
+ .ring .digit.current{height:42px;font-size:31px}
+ .controls button{flex:1;padding:10px 7px;font-size:9px}
+}
+
+/* Tamburo composto da immagini PNG affiancate */
+.cryptex-frame{
+ max-width:720px;
+ padding:20px 8px;
+ overflow:hidden;
+}
+.rings{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:0;
+ width:max-content;
+ max-width:none;
+ height:clamp(150px,22.9vw,220px);
+ margin:0 auto;
+ overflow:visible;
+}
+.ring-image{
+ display:block;
+ flex:0 0 auto;
+ height:100%;
+ width:auto;
+ max-width:none;
+ object-fit:contain;
+ margin:0;
+ padding:0;
+ border:0;
+ border-radius:0;
+ cursor:ns-resize;
+ touch-action:none;
+ user-select:none;
+ -webkit-user-drag:none;
+}
+.ring-image:focus-visible{outline:2px solid #fff0b8;outline-offset:-3px}
+
+/* Comandi in ottone, allineati al centro del tamburo */
+.controls{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:12px;
+ width:100%;
+ max-width:720px;
+ margin:18px auto 0;
+}
+.controls button{
+ flex:0 0 auto;
+ min-height:42px;
+ padding:10px 17px;
+ border:2px ridge #c69a53;
+ border-radius:3px;
+ color:#f4dfb2;
+ background:
+  linear-gradient(180deg,#f0d08a 0%,#a97835 18%,#68431f 48%,#3a2413 51%,#8d5b27 82%,#d3aa62 100%);
+ box-shadow:
+  inset 0 1px 2px #fff6c2aa,
+  inset 0 -2px 4px #1b1009,
+  0 2px 4px #000a,
+  0 0 0 1px #29190e;
+ font: bold 11px "Courier New",monospace;
+ letter-spacing:1px;
+ text-shadow:0 1px 2px #170e07;
+ text-transform:uppercase;
+ cursor:pointer;
+ transition:filter .15s ease,transform .15s ease,box-shadow .15s ease;
+}
+.controls button:hover{
+ filter:brightness(1.18);
+ box-shadow:inset 0 1px 2px #fff8c9,inset 0 -2px 4px #1b1009,0 3px 7px #000b,0 0 0 1px #29190e;
+}
+.controls button:active{
+ transform:translateY(1px);
+ filter:brightness(.94);
+}
+.controls button:focus-visible{
+ outline:2px solid #f5d991;
+ outline-offset:3px;
+}
+.controls button.gold{
+ color:#fff0c8;
+ border-color:#e0bd75;
+ background:
+  linear-gradient(180deg,#ffe4a1 0%,#c18b3e 18%,#80501f 48%,#4b2c12 51%,#a36b2a 82%,#e4bd70 100%);
+}
+@media(max-width:520px){
+ .controls{gap:8px;margin-top:15px}
+ .controls button{flex:1 1 135px;min-height:40px;padding:9px 10px;font-size:10px}
+}
+
+
+/* Impaginazione compatta: interfaccia contenuta nella schermata */
+body{
+ min-height:100svh;
+ padding:8px;
+}
+.machine{
+ width:min(100%,850px);
+ padding:clamp(10px,1.5vw,17px);
+}
+header{
+ padding:0 0 8px;
+}
+h1{
+ font-size:clamp(23px,4vw,37px);
+ margin:3px 0;
+}
+.ring-choice{
+ margin:9px auto -5px;
+ gap:0;
+}
+.ring-choice select{
+ padding:5px 10px;
+}
+.cryptex-frame{
+ margin:12px auto 9px;
+ padding:16px 8px;
+}
+.cryptex-frame:before,.cryptex-frame:after{
+ height:7px;
+}
+.rings{
+ height:clamp(82px,min(24vw,25vh),185px);
+}
+.controls{
+ gap:8px;
+ margin:10px auto 0;
+}
+.controls button{
+ min-height:35px;
+ padding:7px 12px;
+ font-size:10px;
+}
+.message{
+ min-height:0;
+ margin:9px auto 0;
+ padding:8px 11px;
+ font-size:12px;
+}
+.status{
+ margin:9px auto 0;
+}
+.instructions{
+ margin:11px auto 0;
+ padding-top:8px;
+ line-height:1.45;
+}
+.instructions h2{
+ margin-bottom:4px;
+}
+footer{
+ margin-top:10px;
+ padding-top:7px;
+ letter-spacing:1px;
+}
+@media(max-height:700px){
+ body{padding:5px}
+ .machine{padding:9px 12px}
+ header{padding-bottom:6px}
+ h1{font-size:clamp(21px,3.5vw,31px)}
+ .ring-choice{margin:6px auto -5px}
+ .cryptex-frame{margin:8px auto 7px;padding:12px 8px}
+ .rings{height:clamp(75px,min(21vw,21vh),150px)}
+ .controls{margin-top:7px;gap:6px}
+ .controls button{min-height:31px;padding:5px 10px}
+ .message{margin-top:7px;padding:6px 9px}
+ .status{margin-top:6px}
+ .instructions{margin-top:7px;padding-top:5px;font-size:11px}
+ .instructions h2{font-size:13px;margin-bottom:2px}
+ footer{margin-top:7px;padding-top:5px;font-size:8px}
+}
+@media(max-width:520px){
+ .machine{padding:10px 8px}
+ .controls button{flex:1 1 120px}
+ footer{font-size:8px;gap:6px}
+}
+
+
+/* Dimensionamento verticale: la macchina occupa la viewport senza rimpicciolire il contenuto */
+body{
+ min-height:100svh;
+ padding:12px;
+}
+.machine{
+ width:min(100%,1100px);
+ min-height:calc(100svh - 24px);
+ display:flex;
+ flex-direction:column;
+ justify-content:space-between;
+ padding:clamp(16px,2vw,28px);
+}
+header{padding:4px 0 14px}
+h1{font-size:clamp(32px,4.2vw,50px);margin:5px 0}
+.ring-choice{margin:10px auto 0}
+.ring-choice select{padding:7px 12px}
+.cryptex-frame{
+ width:100%;
+ max-width:none;
+ margin:14px auto;
+ padding:24px 12px;
+}
+.rings{
+ height:clamp(160px,34vh,300px);
+}
+.controls{margin:12px auto 0}
+.controls button{min-height:40px;padding:9px 16px;font-size:11px}
+.message{
+ width:min(100%,850px);
+ max-width:850px;
+ margin:12px auto 0;
+ padding:10px 14px;
+ font-size:13px;
+}
+.status{
+ width:min(100%,900px);
+ max-width:900px;
+ margin:12px auto 0;
+}
+.instructions{
+ width:min(100%,900px);
+ max-width:900px;
+ margin:14px auto 0;
+ padding-top:10px;
+ font-size:13px;
+}
+footer{
+ margin-top:14px;
+ padding-top:9px;
+}
+@media(max-height:700px){
+ body{padding:6px}
+ .machine{
+  min-height:calc(100svh - 12px);
+  padding:12px 16px;
+ }
+ header{padding:2px 0 7px}
+ h1{font-size:clamp(25px,3.4vw,36px)}
+ .ring-choice{margin:6px auto 0}
+ .cryptex-frame{margin:8px auto;padding:15px 8px}
+ .rings{height:clamp(125px,28vh,190px)}
+ .controls{margin-top:7px}
+ .controls button{min-height:34px;padding:6px 11px}
+ .message{margin-top:7px;padding:7px 10px}
+ .status{margin-top:7px}
+ .instructions{margin-top:8px;padding-top:6px;font-size:11px}
+ footer{margin-top:8px;padding-top:6px;font-size:8px}
+}
+@media(max-width:520px){
+ .machine{padding:12px 8px}
+ .rings{height:clamp(125px,25vh,200px)}
+ .cryptex-frame{padding:17px 5px}
+ .controls{gap:7px}
+ .controls button{flex:1 1 120px}
+}
+
+
+/* Il tamburo resta autonomo: nessuna cornice o barra decorativa esterna */
+.cryptex-frame{
+ width:100%;
+ max-width:none;
+ margin:12px auto;
+ padding:0;
+ border:0;
+ background:transparent;
+ box-shadow:none;
+ position:relative;
+ overflow:visible;
+}
+.cryptex-frame:before,
+.cryptex-frame:after{
+ content:none;
+ display:none;
+}
+.rings{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:0;
+ width:max-content;
+ max-width:100%;
+ height:clamp(160px,34vh,300px);
+ margin:0 auto;
+ overflow:visible;
+}
+
+
+.sound-controls{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:18px;
+ margin:7px auto 0;
+ color:#e8d2a5;
+ font: bold 9px "Courier New",monospace;
+ letter-spacing:1.2px;
+}
+.sound-toggle{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ cursor:pointer;
+ user-select:none;
+}
+.sound-toggle input{
+ position:absolute;
+ opacity:0;
+ width:1px;
+ height:1px;
+}
+.sound-toggle .switch{
+ width:29px;
+ height:15px;
+ display:inline-block;
+ position:relative;
+ border:1px ridge #b98b48;
+ border-radius:9px;
+ background:linear-gradient(#21180f,#574027);
+ box-shadow:inset 0 1px 4px #000b,0 1px 2px #0008;
+}
+.sound-toggle .switch:after{
+ content:"";
+ position:absolute;
+ top:1px;
+ left:1px;
+ width:11px;
+ height:11px;
+ border-radius:50%;
+ border:1px solid #6e491f;
+ background:linear-gradient(135deg,#ffe5a0,#a66c2b 65%,#4a2b12);
+ box-shadow:0 1px 2px #000b;
+ transition:transform .16s ease;
+}
+.sound-toggle input:checked + .switch{
+ background:linear-gradient(#627451,#263c2b);
+}
+.sound-toggle input:checked + .switch:after{
+ transform:translateX(13px);
+}
+.sound-toggle input:focus-visible + .switch{
+ outline:2px solid #ffe2a0;
+ outline-offset:3px;
+}
+.music-credits{
+ margin:5px auto 0;
+ text-align:center;
+ color:#9f8359;
+ font:9px Georgia,serif;
+}
+.music-credits a{
+ color:#d4b477;
+ text-decoration:underline;
+ text-underline-offset:2px;
+}
+@media(max-height:700px){
+ .sound-controls{margin-top:4px;gap:13px;font-size:8px}
+ .sound-toggle .switch{width:26px;height:14px}
+ .sound-toggle .switch:after{width:10px;height:10px}
+ .sound-toggle input:checked + .switch:after{transform:translateX(11px)}
+ .music-credits{font-size:8px;margin-top:3px}
+}
+
+
+/* Schermata iniziale: blocca il gioco finché non viene avviato */
+.launch-overlay{
+ position:fixed;
+ inset:0;
+ z-index:10000;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ background:rgba(8,13,10,.76);
+ -webkit-backdrop-filter:blur(5px);
+ backdrop-filter:blur(5px);
+}
+.launch-panel{
+ width:min(100%,530px);
+ padding:34px 30px 32px;
+ text-align:center;
+ color:#f0d7a5;
+ background:linear-gradient(145deg,rgba(24,43,32,.98),rgba(8,19,13,.98));
+ border:1px solid #bd914c;
+ box-shadow:0 12px 36px #000a,inset 0 1px 0 #f4d28a55;
+}
+.launch-panel h2{
+ margin:0 0 17px;
+ color:#f5d69c;
+ font:bold clamp(25px,4vw,38px) Georgia,serif;
+ letter-spacing:1px;
+ text-shadow:0 2px 3px #000b;
+}
+.launch-panel p{
+ max-width:420px;
+ margin:0 auto 25px;
+ font:17px/1.5 Georgia,serif;
+ color:#e6d0aa;
+}
+.launch-panel button{
+ min-width:245px;
+ min-height:54px;
+ padding:12px 22px;
+ color:#fff0c8;
+ border:2px ridge #e1b96e;
+ border-radius:0;
+ background:linear-gradient(180deg,#d9a85d 0%,#a87332 45%,#70471f 100%);
+ box-shadow:inset 0 1px 2px #fff8c8,0 3px 7px #0009;
+ font:bold 12px "Courier New",monospace;
+ letter-spacing:1px;
+ text-shadow:0 1px 2px #3b210d;
+ cursor:pointer;
+}
+.launch-panel button:hover{filter:brightness(1.12)}
+.launch-panel button:active{transform:translateY(1px)}
+.launch-panel button:focus-visible{outline:2px solid #ffe2a0;outline-offset:4px}
+@media(max-width:520px){
+ .launch-panel{padding:27px 18px}
+ .launch-panel p{font-size:15px}
+ .launch-panel button{min-width:0;width:100%}
+}
+
+
+.launch-overlay[hidden]{
+ display:none !important;
+}
+
+
+/* Cartiglio di vittoria */
+.scroll-overlay{
+ position:fixed;
+ inset:0;
+ z-index:9000;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:10px;
+ padding:18px;
+ background:rgba(5,8,6,.78);
+ -webkit-backdrop-filter:blur(4px);
+ backdrop-filter:blur(4px);
+ cursor:pointer;
+}
+.scroll-overlay[hidden]{display:none !important}
+.scroll-stage{
+ position:relative;
+ width:min(75vw,900px);
+ aspect-ratio:2048 / 682;
+ flex:0 0 auto;
+ filter:drop-shadow(0 10px 18px #000b);
+}
+.scroll-image{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain;
+ pointer-events:none;
+}
+.scroll-text{
+ position:absolute;
+ left:14%;
+ top:24%;
+ width:72%;
+ height:52%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:2px 3%;
+ overflow:hidden;
+ color:#593719;
+ text-align:center;
+ text-wrap:balance;
+ font-family:"Rye",Georgia,serif;
+ font-size:clamp(9px,1.15vw,18px);
+ font-weight:400;
+ line-height:1.3;
+ text-shadow:0 1px 0 #f7d99a88;
+ overflow-wrap:break-word;
+ hyphens:auto;
+ pointer-events:none;
+}
+.scroll-dismiss{
+ color:#e7cf9e;
+ font:10px "Courier New",monospace;
+ letter-spacing:1.5px;
+ text-align:center;
+ text-shadow:0 1px 3px #000;
+}
+@media(max-width:600px){
+ .scroll-overlay{padding:8px;gap:7px}
+ .scroll-stage{width:75vw}
+ .scroll-text{font-size:9px;line-height:1.2}
+ .scroll-dismiss{font-size:8px;letter-spacing:1px}
+}
+
+
+.scroll-overlay:not([hidden]){
+ animation:scrollFadeIn .65s ease both;
+}
+@keyframes scrollFadeIn{
+ from{opacity:0}
+ to{opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+ .scroll-overlay:not([hidden]){animation:none}
+}
+
+</style>
+</head>
+<body>
+<div class="launch-overlay" id="launchOverlay">
+ <section class="launch-panel" role="dialog" aria-modal="true" aria-labelledby="launchTitle">
+  <h2 id="launchTitle">LA MACCHINA È PRONTA</h2>
+  <p>La macchina attende il tuo comando. Premi il pulsante per avviare il meccanismo.</p>
+  <button type="button" id="launchButton">AVVIA LA MACCHINA</button>
+ </section>
+</div>
+<main class="machine">
+ <header>
+  <h1>MACHINA CRYPTICA</h1>
+ </header>
+
+ <div class="ring-choice">
+  <select id="ringCount">
+   <option value="4" selected>4 ANELLI</option>
+   <option value="5">5 ANELLI</option>
+   <option value="6">6 ANELLI</option>
+  </select>
+ </div>
+ <div class="sound-controls" aria-label="Impostazioni audio">
+  <label class="sound-toggle">
+   <input type="checkbox" id="musicToggle" checked>
+   <span class="switch" aria-hidden="true"></span>
+   <span>MUSICA</span>
+  </label>
+  <label class="sound-toggle">
+   <input type="checkbox" id="effectsToggle" checked>
+   <span class="switch" aria-hidden="true"></span>
+   <span>EFFETTI SONORI</span>
+  </label>
+ </div>
+ <audio id="backgroundMusic" src="mistery.mp3" loop preload="auto"></audio>
+ <section class="cryptex-frame" aria-label="Cryptex numerico">
+  <div class="rings" id="rings"></div>
+ </section>
+
+ <div class="controls">
+  <button class="action" id="reset">↺ AZZERA ANELLI</button>
+  <button class="action gold" id="unlock">⚿ TENTA APERTURA</button>
+  <button class="action" id="new">✦ NUOVO CODICE</button>
+ </div>
+
+ <div class="message" id="message" aria-live="polite">
+  Il meccanismo è bloccato. Allinea le cifre e prova ad aprire il cilindro.
+ </div>
+ <div class="hint" id="hint" hidden>5 ANELLI · 10 CIFRE CIASCUNO · 100.000 COMBINAZIONI</div>
+
+ <div class="status">
+  <span>TENTATIVI: <strong id="attempts">0</strong></span>
+  <span>STATO: <strong id="state">BLOCCATO</strong></span>
+  <span>CODICE: <strong>RISERVATO</strong></span>
+ </div>
+
+ <section class="instructions">
+  <h2>Come funziona</h2>
+  Ogni tamburo mostra una cifra da 0 a 9. Trascina il dito o il mouse per ruotarlo.
+  Dopo ogni tentativo ricevi due indizi: quante cifre sono corrette e nella posizione giusta,
+  e quante sono presenti nella sequenza ma collocate altrove. Le cifre possono ripetersi.
+ </section>
+ <footer><span>OFFICINA DEGLI ENIGMI · Machina N° 004</span><span>BREVETTO MECCANICO 1.12.2 – 1894</span></footer>
+ <div class="music-credits">
+  Music by <a href="https://pixabay.com/users/johan_benitez99co-47699230/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=279249" target="_blank" rel="noopener noreferrer">Johan Benitez</a>
+  from <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=279249" target="_blank" rel="noopener noreferrer">Pixabay</a>
+ </div>
+</main>
+
+<div class="scroll-overlay" id="messageScroll" hidden tabindex="-1" role="dialog" aria-modal="true" aria-label="Messaggio segreto">
+ <div class="scroll-stage" id="scrollStage">
+  <img class="scroll-image" src="cartiglio.png" alt="Antico cartiglio di pergamena">
+  <div class="scroll-text" id="scrollText"></div>
+ </div>
+ <div class="scroll-dismiss">CLIC · ESC · SPAZIO PER CHIUDERE</div>
+</div>
+<script>
+(() => {
+ const digits='0123456789'.split('');
+ const ringsEl=document.getElementById('rings');
+ const message=document.getElementById('message');
+ const ringCount=document.getElementById('ringCount');
+ const music=document.getElementById('backgroundMusic');
+ const musicToggle=document.getElementById('musicToggle');
+ const effectsToggle=document.getElementById('effectsToggle');
+ let audioContext=null;
+ let length=Number(ringCount.value), code='',positions=[],attempts=0,unlocked=false,scrollTimer=null;
+
+ // La riproduzione musicale parte al primo gesto dell'utente, per rispettare
+ // le restrizioni autoplay dei browser.
+ music.volume=0.28;
+ let musicStarted=false;
+ function startMusic(){
+  if(!musicToggle.checked || musicStarted)return;
+  const playPromise=music.play();
+  if(playPromise && typeof playPromise.then==='function'){
+   playPromise.then(()=>{musicStarted=true;}).catch(()=>{});
+  }else{
+   musicStarted=true;
+  }
+ }
+ function getAudioContext(){
+  if(!audioContext){
+   const AudioCtx=window.AudioContext||window.webkitAudioContext;
+   if(!AudioCtx)return null;
+   audioContext=new AudioCtx();
+  }
+  if(audioContext.state==='suspended')audioContext.resume();
+  return audioContext;
+ }
+ function playMechanicalSound(kind){
+  if(!effectsToggle.checked)return;
+  const ctx=getAudioContext();
+  if(!ctx)return;
+  const now=ctx.currentTime;
+  const master=ctx.createGain();
+  master.gain.setValueAtTime(kind==='drum'?0.12:0.16,now);
+  master.gain.exponentialRampToValueAtTime(0.001,now+(kind==='drum'?0.095:0.065));
+  master.connect(ctx.destination);
+
+  const osc=ctx.createOscillator();
+  const tone=ctx.createGain();
+  osc.type=kind==='drum'?'triangle':'square';
+  const startFreq=kind==='drum'?175:950;
+  osc.frequency.setValueAtTime(startFreq,now);
+  osc.frequency.exponentialRampToValueAtTime(kind==='drum'?72:360,now+(kind==='drum'?0.085:0.045));
+  tone.gain.setValueAtTime(0.75,now);
+  tone.gain.exponentialRampToValueAtTime(0.001,now+(kind==='drum'?0.09:0.06));
+  osc.connect(tone);tone.connect(master);
+  osc.start(now);osc.stop(now+(kind==='drum'?0.10:0.07));
+
+  if(kind==='drum'){
+   const noiseBuffer=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.045),ctx.sampleRate);
+   const data=noiseBuffer.getChannelData(0);
+   for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
+   const noise=ctx.createBufferSource();
+   const filter=ctx.createBiquadFilter();
+   const noiseGain=ctx.createGain();
+   noise.buffer=noiseBuffer;
+   filter.type='bandpass';filter.frequency.value=1250;filter.Q.value=1.1;
+   noiseGain.gain.setValueAtTime(0.22,now);
+   noiseGain.gain.exponentialRampToValueAtTime(0.001,now+0.045);
+   noise.connect(filter);filter.connect(noiseGain);noiseGain.connect(master);
+   noise.start(now);noise.stop(now+0.05);
+  }
+ }
+ const launchOverlay=document.getElementById('launchOverlay');
+ const launchButton=document.getElementById('launchButton');
+ launchButton.addEventListener('click',()=>{
+  launchOverlay.hidden=true;
+  startMusic();
+  document.getElementById('rings').focus?.();
+ });
+ musicToggle.addEventListener('change',()=>{
+  if(musicToggle.checked){musicStarted=false;startMusic();}
+  else{music.pause();music.currentTime=0;musicStarted=false;}
+ });
+ effectsToggle.addEventListener('change',()=>{
+  if(effectsToggle.checked)getAudioContext();
+ });
+
+ function randomCode(){
+  return Array.from({length},()=>digits[Math.floor(Math.random()*10)]).join('');
+ }
+ function currentSequence(){return positions.join('');}
+ function updateHint(){
+  document.getElementById('hint').textContent=
+   `${length} ANELLI · 10 CIFRE CIASCUNO · ${(10**length).toLocaleString('it-IT')} COMBINAZIONI`;
+ }
+ function render(){
+  ringsEl.innerHTML='';
+  const makeImage=(file,alt)=>{
+   const img=document.createElement('img');
+   img.className='ring-image';img.src=file;img.alt=alt;img.draggable=false;
+   return img;
+  };
+  ringsEl.appendChild(makeImage('left.png','Estremità sinistra del cryptex'));
+  positions.forEach((pos,index)=>{
+   const img=makeImage(`${String(pos).padStart(2,'0')}.png`,`Tamburo ${index+1}: cifra ${pos}`);
+   img.tabIndex=0;img.setAttribute('role','slider');
+   img.setAttribute('aria-label',`Tamburo numerico ${index+1}`);
+   img.setAttribute('aria-valuemin','0');img.setAttribute('aria-valuemax','9');
+   img.setAttribute('aria-valuenow',String(pos));ringsEl.appendChild(img);
+   const updateDrum=()=>{
+    img.src=`${String(positions[index]).padStart(2,'0')}.png`;
+    img.alt=`Tamburo ${index+1}: cifra ${positions[index]}`;
+    img.setAttribute('aria-valuenow',String(positions[index]));
+   };
+   let startY=null,lastStep=0;
+   const rotate=step=>{
+    if(unlocked||step===0)return;
+    positions[index]=(positions[index]+step+10)%10;updateDrum();playMechanicalSound('drum');
+   };
+   img.addEventListener('pointerdown',e=>{
+    if(unlocked)return;startY=e.clientY;lastStep=0;img.setPointerCapture(e.pointerId);
+   });
+   img.addEventListener('pointermove',e=>{
+    if(startY===null||unlocked)return;
+    const steps=Math.trunc((startY-e.clientY)/18);
+    if(steps!==lastStep){rotate(steps-lastStep);lastStep=steps;}
+   });
+   const endDrag=()=>{startY=null;lastStep=0;};
+   img.addEventListener('pointerup',endDrag);img.addEventListener('pointercancel',endDrag);
+   img.addEventListener('wheel',e=>{if(unlocked)return;e.preventDefault();rotate(e.deltaY>0?-1:1);},{passive:false});
+   img.addEventListener('keydown',e=>{
+    if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();rotate(e.key==='ArrowUp'?1:-1);}
+   });
+  });
+  ringsEl.appendChild(makeImage('right.png','Estremità destra del cryptex'));
+ }
+ function show(text,type=''){
+  message.textContent=text;
+  message.className='message'+(type?' '+type:'');
+ }
+
+ const victoryMessages=[
+  'Il meccanismo riconosce la tua mano. Non è la prima volta che ci incontriamo.',
+  'Il professor Von Eisenberg sosteneva che ogni segreto possiede una propria frequenza. Non abbiamo mai ritrovato il professore.',
+  'Quattro ruote, dieci simboli, un solo destino. Eppure nessuno ricorda chi abbia costruito questa macchina.',
+  'Non fidarti degli ingranaggi silenziosi. Sono quelli che nascondono i pensieri più pericolosi.',
+  'Se stai leggendo queste parole, significa che il primo sigillo ha ceduto. Gli altri attendono.',
+  'L’ottone è carne, il vapore è sangue, l’elettricità è memoria. Così ragionavano gli antichi meccanisti.',
+  'La macchina non custodisce un tesoro. Custodisce qualcosa che non dovrebbe essere ritrovato.',
+  'Le coincidenze sono ingranaggi invisibili. Qualcuno, da qualche parte, li sta facendo girare.',
+  'Laboratorio sotterraneo, settore IX. Esperimento interrotto alle 03:17. Nessun superstite. Macchina ancora attiva.',
+  'Il tempo non scorre: gira. E ogni giro ci riporta un poco più vicini alla fine.',
+  'Cogito, ergo machina. Penso, dunque la macchina esiste. Ma chi pensa dentro di essa?',
+  'Tre impulsi, una pausa, altri tre impulsi. Il segnale proviene da sotto la città.',
+  'Quando l’ultima ruota si fermerà, il primo orologio tornerà a battere.',
+  'Hai trovato la combinazione, ma non la chiave. La chiave non è mai stata di metallo.',
+  'Esperimento 004: riuscito. Il soggetto ha aperto gli occhi. Il soggetto non ha un volto.',
+  'Qualcuno ha lasciato impronte sul pavimento del laboratorio. Le impronte arrivano fino alla macchina. Non ripartono.',
+  'Archivio riservato. Documento classificato. Se queste parole sono visibili, il protocollo di sicurezza è fallito.',
+  'Una macchina costruita per custodire un segreto ha appena rivelato il proprio.',
+  'Qui stazione di trasmissione ÆTHER-7. Se ricevete questo messaggio, non accendete il reattore.',
+  'Non aprire la camera centrale. Non importa quale voce ti chieda di farlo. Soprattutto se è la tua.',
+  'La Confraternita del Pendolo non è scomparsa. Ha semplicemente imparato a nascondersi tra un secondo e l’altro.',
+  'Ogni ingranaggio ha un prezzo. Ogni rotazione un debito. Qualcuno, prima o poi, dovrà saldare il conto.',
+  'Abbiamo dimostrato che la materia può ricordare. Ora dobbiamo scoprire cosa ricorda.',
+  'Il cuore della macchina batte ancora. Non interrompere il ciclo. Non sai cosa potrebbe svegliarsi.'
+ ];
+
+ const scrollOverlay=document.getElementById('messageScroll');
+ const scrollStage=document.getElementById('scrollStage');
+ const scrollText=document.getElementById('scrollText');
+
+ function fitScrollText(){
+  scrollText.style.fontSize='';
+  let size=parseFloat(getComputedStyle(scrollText).fontSize);
+  const minSize=8;
+  while(scrollText.scrollHeight>scrollText.clientHeight && size>minSize){
+   size=Math.max(minSize,size-0.5);
+   scrollText.style.fontSize=size+'px';
+  }
+ }
+ function closeScroll(){
+  scrollOverlay.hidden=true;
+ }
+ function openScroll(){
+  scrollText.textContent=victoryMessages[Math.floor(Math.random()*victoryMessages.length)];
+  const machineWidth=document.querySelector('.machine').getBoundingClientRect().width;
+  scrollStage.style.width=Math.min(machineWidth*0.75,900)+'px';
+  scrollOverlay.hidden=false;
+  requestAnimationFrame(()=>{
+   fitScrollText();
+   scrollOverlay.focus({preventScroll:true});
+  });
+ }
+ scrollOverlay.addEventListener('click',closeScroll);
+ document.addEventListener('keydown',event=>{
+  if(scrollOverlay.hidden)return;
+  if(event.key==='Escape'||event.key===' '||event.code==='Space'){
+   event.preventDefault();
+   closeScroll();
+  }
+ });
+
+ function winGame(){
+  if(unlocked)return;
+  unlocked=true;
+  document.getElementById('state').textContent='SBLOCCATO';
+  document.getElementById('hint').textContent='MECCANISMO DISINNESTATO · ACCESSO CONSENTITO';
+  show('CLACK! MECCANISMO SBLOCCATO. La combinazione corretta è '+code+'.','success');
+  if(scrollTimer!==null)clearTimeout(scrollTimer);
+  scrollTimer=setTimeout(()=>{
+   scrollTimer=null;
+   if(unlocked)openScroll();
+  },2500);
+ }
+ function reset(){
+  if(scrollTimer!==null){clearTimeout(scrollTimer);scrollTimer=null;}
+  closeScroll();
+  positions=Array(length).fill(0);attempts=0;unlocked=false;
+  document.getElementById('attempts').textContent='0';
+  document.getElementById('state').textContent='BLOCCATO';
+  updateHint();
+  show('Il meccanismo è bloccato. Trova la sequenza numerica corretta usando gli indizi.');
+  render();
+ }
+ function newGame(){
+  code=randomCode();
+  reset();
+ }
+ function getClues(guess,solution){
+  let exact=0,guessRest=[],solutionRest=[];
+  for(let i=0;i<length;i++){
+   if(guess[i]===solution[i])exact++;
+   else{guessRest.push(guess[i]);solutionRest.push(solution[i]);}
+  }
+  let misplaced=0;
+  for(const digit of guessRest){
+   const found=solutionRest.indexOf(digit);
+   if(found!==-1){misplaced++;solutionRest.splice(found,1);}
+  }
+  return {exact,misplaced};
+ }
+ ['reset','unlock','new'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',()=>playMechanicalSound('button'));
+ });
+ document.getElementById('unlock').addEventListener('click',()=>{
+  if(unlocked)return;
+  attempts++;
+  document.getElementById('attempts').textContent=attempts;
+  const guess=currentSequence();
+  if(guess===code){
+   winGame();
+   return;
+  }
+  const {exact,misplaced}=getClues(guess,code);
+  const exactText=`${exact} ${exact===1?'cifra corretta nella posizione giusta':'cifre corrette nella posizione giusta'}`;
+  const misplacedText=`${misplaced} ${misplaced===1?'cifra presente ma in posizione errata':'cifre presenti ma in posizione errata'}`;
+  show(`La serratura resiste. ${exactText}; ${misplacedText}.`,'error');
+ });
+ document.getElementById('reset').addEventListener('click',reset);
+ document.getElementById('new').addEventListener('click',newGame);
+
+ // Codice riservato dell'officina: mysterio
+ let cheatBuffer='';
+ document.addEventListener('keydown',event=>{
+  if(unlocked || event.ctrlKey || event.altKey || event.metaKey)return;
+  const target=event.target;
+  if(target && (target.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(target.tagName)))return;
+  if(event.key.length!==1)return;
+  cheatBuffer=(cheatBuffer+event.key).slice(-8);
+  if(cheatBuffer==='mysterio'){
+   positions=code.split('').map(Number);
+   render();
+   winGame();
+   cheatBuffer='';
+  }
+ });
+ ringCount.addEventListener('change',()=>{
+  length=Number(ringCount.value);
+  newGame();
+ });
+ newGame();
+})();
+</script>
+</body>
+</html>
