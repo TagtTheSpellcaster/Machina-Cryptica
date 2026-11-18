@@ -17,6 +17,8 @@ Il giocatore deve allineare i tamburi numerici per individuare una combinazione 
 
 L'interfaccia riproduce l'estetica di uno strumento meccanico ottocentesco, con componenti grafici illustrati, effetti sonori e musica d'atmosfera.
 
+[Puoi giocarci qui](https://tagtthespellcaster.github.io/Machina-Cryptica/)
+
 ## Caratteristiche
 
 - Cryptex configurabile con 4, 5 o 6 anelli.
